@@ -13,8 +13,8 @@ def take_screenshot():
     now = datetime.now(tz)
     timestamp = now.strftime('%Y%m%d_%H%M')
     
-    latest_path = "screenshots/latest.png"         # 永遠覆蓋最新的一張
-    history_path = f"screenshots/{timestamp}.png"  # 歷史紀錄備份
+    latest_path = "screenshots/latest.jpg"         # 改為 .jpg
+    history_path = f"screenshots/{timestamp}.jpg"  # 改為 .jpg
 
     print(f"正在前往網站截圖：{TARGET_URL}")
     with sync_playwright() as p:
@@ -26,7 +26,7 @@ def take_screenshot():
         # 載入網頁並等待網路停止載入
         page.goto(TARGET_URL, wait_until="networkidle", timeout=60000)
         
-        # 儲存截圖 (改用 jpeg 格式或優化 quality，讓 GitHub 100% 能預覽)
+        # 儲存截圖 (使用 jpeg 格式)
         page.screenshot(path=latest_path, full_page=False, type="jpeg", quality=80)
         page.screenshot(path=history_path, full_page=False, type="jpeg", quality=80)
         browser.close()
