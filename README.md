@@ -5,6 +5,6 @@
 
 ---
 
-### 📸 最新網頁截圖 (latest.jpg)
+### 📸 最新網頁截圖
 
-![最新截圖](screenshots/latest.jpg)
+![最新截圖](screenshots/latest.png)
