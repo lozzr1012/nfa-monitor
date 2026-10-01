@@ -7,4 +7,4 @@
 
 ### 📸 最新網頁截圖
 
-![](./screenshots/latest.png)
+<img src="https://raw.githubusercontent.com/lozzr1012/nfa-monitor/main/screenshots/latest.png" width="100%" />
