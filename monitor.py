@@ -17,32 +17,49 @@ def take_screenshot():
 
     print(f"正在前往網站截圖：{TARGET_URL}")
     with sync_playwright() as p:
-        # 模擬標準 Chromium 瀏覽器環境
+        # 啟動 Chromium 瀏覽器
         browser = p.chromium.launch(
             headless=True,
-            args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled']
+            args=[
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-blink-features=AutomationControlled',
+                '--disable-dev-shm-usage'
+            ]
         )
+        
+        # 模擬繁體中文 Windows 瀏覽器環境與台灣時區，防止被 WAF 判定為海外機器人
         context = browser.new_context(
             viewport={"width": 1440, "height": 900},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+            locale="zh-TW",
+            timezone_id="Asia/Taipei",
+            extra_http_headers={
+                "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            }
         )
         page = context.new_page()
         
-        # 繞過自動化檢測
+        # 繞過 navigator.webdriver 防火牆檢測
         page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         
-        response = page.goto(TARGET_URL, wait_until="networkidle", timeout=90000)
-        print(f"網頁回應狀態碼：{response.status if response else '無回應'}")
-        
-        # 強制等待 3 秒讓 CSS 與圖片完成繪製
-        time.sleep(3)
-        
-        # 進行截圖
-        page.screenshot(path=latest_path, full_page=False)
-        page.screenshot(path=history_path, full_page=False)
-        browser.close()
-        
-    print(f"截圖完成！最新圖片已儲存至 {latest_path}")
+        try:
+            # 載入網頁並等待 DOM
+            response = page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=60000)
+            print(f"網頁連線狀態碼：{response.status if response else '無回應'}")
+            
+            # 等待 5 秒讓動態內容載入
+            time.sleep(5)
+            
+            # 截圖並存檔
+            page.screenshot(path=latest_path, full_page=False)
+            page.screenshot(path=history_path, full_page=False)
+            print("截圖成功！")
+        except Exception as e:
+            print(f"截圖失敗，原因：{e}")
+        finally:
+            browser.close()
 
 if __name__ == "__main__":
     take_screenshot()
