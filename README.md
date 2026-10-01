@@ -1,3 +1,4 @@
+Markdown
 # 內政部消防署官網定時監控系統
 
 > **網址**：https://www.nfa.gov.tw/cht/index.php?  
@@ -7,4 +8,4 @@
 
 ### 📸 最新網頁截圖
 
-![最新截圖](screenshots/latest.png)
+![](./screenshots/latest.png)
